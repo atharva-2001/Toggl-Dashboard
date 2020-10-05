@@ -100,9 +100,10 @@ def main_sunburst(df):
             labels = labels,
             branchvalues = 'total', 
             # maxdepth = 2,
-            textinfo = "none"
+            textinfo = "none",
         )
     )
+    fig.update_layout(height = 600, width = 600)
     return fig
 
 
@@ -111,11 +112,11 @@ def main_sunburst(df):
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div([
-    html.P(
-            "Toggl Dashboard",
-            style={"font-size": "72px", "fontFamily": "Lucida Console"},
-        ),
     html.Div([
+        html.P(
+            "Toggl Dashboard",
+            style={"font-size": "72px", "fontFamily": "Lucida Console", 'width': '70%', 'display': 'inline-block'},
+        ),
         html.Div([
             html.Div(
                 dcc.DatePickerRange(
@@ -124,7 +125,8 @@ app.layout = html.Div([
                     max_date_allowed=datetime.datetime(2025, 12, 30),
                     initial_visible_month=datetime.datetime(2017, 8, 5),
                     end_date=datetime.datetime(2020, 9, 30).date(), 
-                    start_date= datetime.datetime(2020, 8, 30).date())
+                    start_date= datetime.datetime(2020, 8, 30).date(), 
+                    style={"font-size": "20px", "fontFamily": "Lucida Console"})
             # , style={'width': '40%', 'display': 'inline-block'}
             ),
 
@@ -133,7 +135,8 @@ app.layout = html.Div([
                     id = 'token input',
                     placeholder = 'enter toggl token', 
                     value = API_token,
-                    type = 'password')
+                    type = 'password',
+                    style={"font-size": "18px", "fontFamily": "Lucida Console"}),
             # ), style={'width': '30%', 'display': 'inline-block'}
             ),
             
@@ -141,13 +144,13 @@ app.layout = html.Div([
                 dcc.Input(
                     id = 'email input',
                     placeholder = 'enter email address',
-                    value = 'aryaatharva18@gmail.com')
+                    value = 'aryaatharva18@gmail.com', 
+                    style={"font-size": "18px", "fontFamily": "Lucida Console"})
                 # ), style={'width': '30%', 'display': 'inline-block'}
             )],
-            style={'width': '30%', 'display': 'inline-block'}), 
-
-        dcc.Graph(id = 'main sunburst', style={'width': '70%', 'display': 'inline-block'})
-    ])
+            style={'width': '30%', 'display': 'inline-block'})
+    ]),
+     dcc.Graph(id = 'main sunburst')
     # html.Div(id='output-container-date-picker-range')
 ])
 
