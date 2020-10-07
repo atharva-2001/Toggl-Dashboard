@@ -10,6 +10,8 @@ from collections import defaultdict
 import requests 
 import plotly.graph_objects as go
 import numpy as np
+import plotly_express as px
+
 API_token = '7f45ea45a1833ac7e127047a738e4264' # * get from the dashboard 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -35,7 +37,7 @@ def get_response(token, email, start_date, end_date):
     while len(data_in) != 0:
         URL = URL + '&page=' + str(ind)
         response = requests.get(URL, auth = (username, password)).json()
-        print(response)
+        # print(response)
         data_in = response['data']
         data += data_in
         for col in cols:
@@ -67,6 +69,7 @@ def get_response(token, email, start_date, end_date):
     return [detailed_df, summary_df]
 
 def get_processed_df(df):
+    print(df.head())
     df['start'] = df['start'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
     df['end'] = df['end'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
     df['updated'] = df['updated'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
@@ -123,8 +126,8 @@ def get_daily_work(df):
         'day': list(net_work.keys()),
         'work done': list(net_work.values())
     })
+    fig = px.bar(tmp, x =  'day', y = 'work done')
 
-    fig = 0
     return tmp, fig
 
 
@@ -213,13 +216,20 @@ app.layout = html.Div([
             )],
             style={'width': '30%', 'display': 'inline-block'})
     ]),
-     dcc.Graph(id = 'main sunburst')
+     html.Div([
+        html.Div(    
+            dcc.Graph(id = 'main sunburst'), style={'width': '30%', 'display': 'inline-block'}),
+        html.Div(
+            dcc.Graph(id = 'daily'), style={'width': '60%', 'display': 'inline-block'})
+            ])
+
     # html.Div(id='output-container-date-picker-range')
 ])
 
 
 @app.callback(
-    dash.dependencies.Output('main sunburst', 'figure'),
+    [dash.dependencies.Output('main sunburst', 'figure'),
+    dash.dependencies.Output('daily', 'figure')],
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date'), 
      dash.dependencies.Input('token input', 'value'),
@@ -241,20 +251,12 @@ def update_output(start_date, end_date, token, mail):
         pass
 
     detailed_df, summary_df = get_response(token, mail, start_date, end_date)
-    fig = main_sunburst(summary_df)
+    sunburst = main_sunburst(summary_df)
 
-    return (fig)
+    details_processed = get_processed_df(detailed_df)
+    _, daily = get_daily_work(details_processed)
 
-    
-
-
-
-
-    
-    
-
-    
-
+    return (sunburst, daily)
 
 
 
