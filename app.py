@@ -6,12 +6,14 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 import re
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import requests 
 import plotly.graph_objects as go
 import numpy as np
 import plotly_express as px
 import time
+
+
 API_token = '7f45ea45a1833ac7e127047a738e4264' # * get from the dashboard 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -114,7 +116,7 @@ def get_processed_df(df):
 
 def get_daily_work(df):
     '''
-    df should be processed 
+    df should be processed
     '''
     net_work = dict()
     for _, row in df.iterrows():
@@ -127,9 +129,49 @@ def get_daily_work(df):
         'work done': list(net_work.values())
     })
     fig = px.bar(tmp, x =  'day', y = 'work done')
-
+    fig.update_layout(height = 600, width = 1050)
     return tmp, fig
 
+
+
+def build_stacked_bar(df):
+    '''
+    returns stacked bar chart,
+    input should be processed
+    '''
+
+    # there have to multiple traces equal to the number of projects
+    df['project'] = ['Empty Project' if item is None else item for item in df['project'].tolist()]
+    projects = list(set(df['project'].tolist()))
+    days = sorted(list(set(df['end_day'].tolist())))
+    trace_dict = defaultdict(dict)
+    
+    for project in projects:
+        for day in days:
+            tmp = df[df['project'] == project][df['end_day'] == day]
+            if len(tmp) == 0: # no work done on that project on that day
+                trace_dict[project][day] = 0
+            else:
+                trace_dict[project][day] = sum(tmp['dur'].tolist())/3600000
+                # add zeros
+    # print(trace_dict)
+
+    trace_dict2 = dict() 
+    for k, v in trace_dict.items():
+        trace_dict2[k] = OrderedDict(sorted(trace_dict[k].items()))
+
+    fig = go.Figure()
+    # for project in projects:
+    for key in trace_dict.keys():
+        
+        y = list(trace_dict[key].values())
+       
+        fig.add_trace(go.Bar(
+            x = days,
+            y = y, name = key
+        ))
+    fig.update_layout(width  =1500, barmode = 'stack')
+    return fig
 
 
 def build_sunburst_data(df, parents, labels,values, string = 'total'):
@@ -147,11 +189,11 @@ def build_sunburst_data(df, parents, labels,values, string = 'total'):
     parents += [string] * len(main_parents)
     labels += main_parents
     values += main_values
-
+    
     parents.append("")
     labels.append(string)
     values.append(0.5*sum(values))
-
+    values = [item/3600000 for item in values] 
     return parents, labels, values
 
 
@@ -169,7 +211,11 @@ def main_sunburst(df):
             insidetextorientation = "radial"
         )
     )
-    fig.update_layout(height = 600, width = 600)
+    fig.update_layout(height = 600, width = 500, margin = {
+        'l': 80, 
+        'r': 80, 
+        
+    })
     return fig
 
 
@@ -193,6 +239,7 @@ app.layout = html.Div([
                     initial_visible_month=datetime.datetime(2017, 8, 5),
                     start_date=datetime.datetime(2020, 8, 10).date(), 
                     end_date= datetime.datetime.now().date() -  datetime.timedelta(days=1),
+                    display_format='MMM Do, YY',
                     style={"font-size": "20px", "fontFamily": "Lucida Console"})
             # , style={'width': '40%', 'display': 'inline-block'}
             ),
@@ -231,8 +278,9 @@ app.layout = html.Div([
             dcc.Graph(id = 'main sunburst'), style={'width': '30%', 'display': 'inline-block'}),
         html.Div(
             dcc.Graph(id = 'daily'), style={'width': '60%', 'display': 'inline-block'  })
-            ])
-
+            ]),
+    dcc.Graph(id = 'details-seg')
+    
     # html.Div(id='output-container-date-picker-range')
 ])
 
@@ -246,7 +294,9 @@ def pause(value):
 
 @app.callback(
     [dash.dependencies.Output('main sunburst', 'figure'),
-    dash.dependencies.Output('daily', 'figure')],
+    dash.dependencies.Output('daily', 'figure'),
+    dash.dependencies.Output('details-seg', 'figure'),
+    ],
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date'), 
      dash.dependencies.Input('token input', 'value'),
@@ -273,7 +323,8 @@ def update_output(start_date, end_date, token, mail):
     details_processed = get_processed_df(detailed_df)
     _, daily = get_daily_work(details_processed)
 
-    return (sunburst, daily)
+    projects_seg  = build_stacked_bar(details_processed)
+    return (sunburst, daily, projects_seg)
 
 
 
