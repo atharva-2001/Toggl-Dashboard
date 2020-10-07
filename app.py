@@ -9,7 +9,7 @@ import re
 from collections import defaultdict
 import requests 
 import plotly.graph_objects as go
-
+import numpy as np
 API_token = '7f45ea45a1833ac7e127047a738e4264' # * get from the dashboard 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -35,7 +35,7 @@ def get_response(token, email, start_date, end_date):
     while len(data_in) != 0:
         URL = URL + '&page=' + str(ind)
         response = requests.get(URL, auth = (username, password)).json()
-        # print(response)
+        print(response)
         data_in = response['data']
         data += data_in
         for col in cols:
@@ -66,6 +66,68 @@ def get_response(token, email, start_date, end_date):
 
     return [detailed_df, summary_df]
 
+def get_processed_df(df):
+    df['start'] = df['start'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
+    df['end'] = df['end'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
+    df['updated'] = df['updated'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
+    df['start_day'] = df['start'].apply(lambda x: x.date())
+    df['end_day'] = df['end'].apply(lambda x: x.date())
+
+    df_daily_raw = defaultdict(list)
+    rows = []
+
+    for index, row in df.iterrows():
+        # if end and start day is equal
+        if row['start_day'] != row['end_day']:
+            row1, row2 = row.to_dict(), row.to_dict()
+            start = row['start']
+            end = row['end']
+
+            end_day = row['end_day']
+
+            mid =  (datetime.datetime.combine(row['end_day'], datetime.datetime.min.time()))
+
+            dur1 = (mid - start).seconds * 1000
+            dur2 = (end - mid).seconds * 1000
+            # print(dur1, dur2)
+            
+            row1['dur'] = dur1
+            row2['dur'] = dur2
+
+            row1['end'] = pd.Timestamp((datetime.datetime.combine(row['start_day'], datetime.datetime.max.time())))
+            row2['start'] = pd.Timestamp(mid)
+
+            # row1['start_day'] = row['start_day']
+            row1['end_day'] = row1['end'].date()
+            row2['start_day'] = mid.date()
+            rows.append([index, row1, row2])
+    # print(df.columns)
+    for item in rows:
+        tmp = pd.DataFrame(np.insert(df.values, item[0],values = list(item[1].values()), axis = 0 ))
+        tmp = pd.DataFrame(np.insert(tmp.values, item[0]+1,values = list(item[2].values()), axis = 0 ))
+        tmp.drop(item[0] + 2, inplace = True)
+    tmp.columns = df.columns
+    return df 
+
+def get_daily_work(df):
+    '''
+    df should be processed 
+    '''
+    net_work = dict()
+    for _, row in df.iterrows():
+        day = row['end_day'] # doesnt matter, both days are equal
+        tmp_df = df[df['end_day'] == day]
+        net_work[day]  =round(sum(tmp_df['dur'].tolist())/3600000, 2) # in hrs 
+    
+    tmp = pd.DataFrame.from_dict({
+        'day': list(net_work.keys()),
+        'work done': list(net_work.values())
+    })
+
+    fig = 0
+    return tmp, fig
+
+
 
 def build_sunburst_data(df, parents, labels,values, string = 'total'):
     
@@ -74,7 +136,7 @@ def build_sunburst_data(df, parents, labels,values, string = 'total'):
     
     for main_parent in  main_parents:
         tmp = []
-        for parent, label, value in zip(parents, labels, values):
+        for parent, _, value in zip(parents, labels, values):
             if parent == main_parent:
                 tmp.append(value)
         main_values.append(sum(tmp))
@@ -99,8 +161,9 @@ def main_sunburst(df):
             parents = parents,
             labels = labels,
             branchvalues = 'total', 
-            # maxdepth = 2,
-            textinfo = "none",
+            maxdepth = 2,
+            textinfo = "label",
+            insidetextorientation = "radial"
         )
     )
     fig.update_layout(height = 600, width = 600)
@@ -124,8 +187,8 @@ app.layout = html.Div([
                     min_date_allowed=datetime.datetime(2015, 12, 1),
                     max_date_allowed=datetime.datetime(2025, 12, 30),
                     initial_visible_month=datetime.datetime(2017, 8, 5),
-                    end_date=datetime.datetime(2020, 9, 30).date(), 
-                    start_date= datetime.datetime(2020, 8, 30).date(), 
+                    start_date=datetime.datetime(2020, 8, 10).date(), 
+                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=1),
                     style={"font-size": "20px", "fontFamily": "Lucida Console"})
             # , style={'width': '40%', 'display': 'inline-block'}
             ),
