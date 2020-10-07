@@ -11,7 +11,7 @@ import requests
 import plotly.graph_objects as go
 import numpy as np
 import plotly_express as px
-
+import time
 API_token = '7f45ea45a1833ac7e127047a738e4264' # * get from the dashboard 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -69,7 +69,7 @@ def get_response(token, email, start_date, end_date):
     return [detailed_df, summary_df]
 
 def get_processed_df(df):
-    print(df.head())
+    # print(df.head())
     df['start'] = df['start'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
     df['end'] = df['end'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
     df['updated'] = df['updated'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
@@ -178,9 +178,10 @@ def main_sunburst(df):
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div([
+    
     html.Div([
         html.P(
-            "Toggl Dashboard",
+            "    Toggl Dashboard",
             style={"font-size": "72px", "fontFamily": "Lucida Console", 'width': '70%', 'display': 'inline-block'},
         ),
         html.Div([
@@ -217,15 +218,31 @@ app.layout = html.Div([
             style={'width': '30%', 'display': 'inline-block'})
     ]),
      html.Div([
+        
+        html.Div(dcc.Loading(
+            id = 'loading',
+            # what's children
+            loading_state = {'component_name': 'main sunburst,daily'},
+            # fullscreen = True,
+            type = 'default'
+
+        )),
         html.Div(    
             dcc.Graph(id = 'main sunburst'), style={'width': '30%', 'display': 'inline-block'}),
         html.Div(
-            dcc.Graph(id = 'daily'), style={'width': '60%', 'display': 'inline-block'})
+            dcc.Graph(id = 'daily'), style={'width': '60%', 'display': 'inline-block'  })
             ])
 
     # html.Div(id='output-container-date-picker-range')
 ])
 
+@app.callback(
+    dash.dependencies.Output('loading', 'children'),
+    [dash.dependencies.Input('loading', 'fullscreen')]
+)
+def pause(value):
+    time.sleep(10)
+    return
 
 @app.callback(
     [dash.dependencies.Output('main sunburst', 'figure'),
