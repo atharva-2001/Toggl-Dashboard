@@ -279,7 +279,14 @@ app.layout = html.Div([
         html.Div(
             dcc.Graph(id = 'daily'), style={'width': '60%', 'display': 'inline-block'  })
             ]),
-    dcc.Graph(id = 'details-seg')
+    dcc.Graph(id = 'details-seg'),
+    html.Div([
+        html.Div(html.H1(children = "daily work done on an average: "), style = {'width': '60%', 'display': 'inline-block' , "fontFamily": "Lucida Console" }),
+        html.Div(html.H1(id = 'daily-avg-work'), style ={'width': '40%', 'display': 'inline-block' , "fontFamily": "Lucida Console"}),
+        
+    ])
+
+
     
     # html.Div(id='output-container-date-picker-range')
 ])
@@ -295,7 +302,8 @@ def pause(value):
 @app.callback(
     [dash.dependencies.Output('main sunburst', 'figure'),
     dash.dependencies.Output('daily', 'figure'),
-    dash.dependencies.Output('details-seg', 'figure'),
+    dash.dependencies.Output('details-seg', 'figure'), 
+    dash.dependencies.Output('daily-avg-work', 'children'),
     ],
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date'), 
@@ -321,10 +329,11 @@ def update_output(start_date, end_date, token, mail):
     sunburst = main_sunburst(summary_df)
 
     details_processed = get_processed_df(detailed_df)
-    _, daily = get_daily_work(details_processed)
+    daily_df, daily = get_daily_work(details_processed)
 
     projects_seg  = build_stacked_bar(details_processed)
-    return (sunburst, daily, projects_seg)
+    avg_work = str(round(sum(daily_df['work done'].tolist())/len(daily_df), 2)) + 'hrs'
+    return (sunburst, daily, projects_seg, avg_work)
 
 
 
