@@ -41,12 +41,6 @@ class Response():
         self.sd = start_date
         self.ed = end_date
     
-
-    # def collect_response(self):
-    #     '''
-    #     returns dataframes back
-    #     in a list [detailed, summary]
-    #     '''
         URL = 'https://api.track.toggl.com/reports/api/v2/details?workspace_id={}&since={}&until={}&user_agent={}'.format(
             str(self.workspace_id), str(self.sd), str(self.ed), self.email
         )
@@ -80,6 +74,7 @@ class Response():
         for project in data:
             tasks = project['items'] 
             for task in tasks:
+
                 df['task'].append(task['title']['time_entry'])
                 df['task time duration'].append(task['time'])
                 df['project'].append(project['title']['project'])
@@ -108,7 +103,6 @@ class Response():
         rows = []
 
         for index, row in df.iterrows():
-            # if end and start day is equal
             if row['start_day'] != row['end_day']:
                 row1, row2 = row.to_dict(), row.to_dict()
                 start, end = row['start'], row['end']
@@ -154,10 +148,9 @@ class Response():
         })
         fig = px.bar(tmp, x =  'day', y = 'work done')
         fig.update_layout(height = 600, width = 1050)
-        fig.show()
 
         self.daily_df, self.daily_df_fig = tmp, fig
-        # return tmp, fig
+        return tmp, fig
 
 
     def build_stacked_bar(self):
@@ -165,8 +158,12 @@ class Response():
         returns stacked bar chart,
         input should be processed
         '''
-        self.get_processed_df()
-        df = self.processed_detailed_df
+        try:
+            df = self.processed_detailed_df
+        except: 
+            print('in except')
+            self.get_processed_df()
+            df = self.processed_detailed_df
 
         # there have to multiple traces equal to the number of projects
         df['project'] = ['Empty Project' if item is None else item for item in df['project'].tolist()]
@@ -194,10 +191,10 @@ class Response():
                 y = y, name = key
             ))
         fig.update_layout(width  =1500, barmode = 'stack')
-        fig.show()
+
         self.detailed_stacked_bar = fig
 
-        # return fig
+        return fig
 
 
     def build_sunburst_data(self, df, parents, labels,values, string = 'total'):
@@ -224,7 +221,6 @@ class Response():
 
 
     def main_sunburst(self):
-        # self.collect_response()
         df = self.summary_df
         
         parents, labels, values = self.build_sunburst_data(df, df['project'].tolist(), df['task'].tolist(),df['task time duration'].tolist(), string = 'total')
@@ -245,9 +241,8 @@ class Response():
             'r': 80, 
             
         })
-        fig.show()
         self.sunburst_fig = fig
-        # return fig
+        return fig
 
 
 res = Response(email=email, 
@@ -255,18 +250,10 @@ res = Response(email=email,
     workspace_id=workspace_id, 
     start_date=str(datetime.datetime(2020, 8, 10).date()), 
     end_date=str(datetime.datetime(2020, 10, 5).date()))
-res.get_daily_work()
+daily_df, fig = res.get_daily_work()
+fig.show()
 
-res = Response(email=email, 
-    token=token, 
-    workspace_id=workspace_id, 
-    start_date=str(datetime.datetime(2020, 8, 10).date()), 
-    end_date=str(datetime.datetime(2020, 10, 5).date()))
-res.build_stacked_bar()
-
-res = Response(email=email, 
-    token=token, 
-    workspace_id=workspace_id, 
-    start_date=str(datetime.datetime(2020, 8, 10).date()), 
-    end_date=str(datetime.datetime(2020, 10, 5).date()))
-res.main_sunburst()
+fig = res.build_stacked_bar()
+fig.show()
+fig = res.main_sunburst()
+fig.show()
