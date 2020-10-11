@@ -42,11 +42,11 @@ class Response():
         self.ed = end_date
     
 
-    def get_response(self):
-        '''
-        returns dataframes back
-        in a list [detailed, summary]
-        '''
+    # def collect_response(self):
+    #     '''
+    #     returns dataframes back
+    #     in a list [detailed, summary]
+    #     '''
         URL = 'https://api.track.toggl.com/reports/api/v2/details?workspace_id={}&since={}&until={}&user_agent={}'.format(
             str(self.workspace_id), str(self.sd), str(self.ed), self.email
         )
@@ -90,14 +90,13 @@ class Response():
 
         self.summary_df = summary_df
         self.detailed_df = detailed_df
-
-        # return [detailed_df, summary_df]
+        
 
     def get_processed_df(self):
         '''
         process the detailed df
         '''
-        self.get_response()
+        # self.collect_response()
         df = self.detailed_df
 
         df['start'] = df['start'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
@@ -126,7 +125,7 @@ class Response():
                 row2['start_day'] = mid.date()
                 rows.append([index, row1, row2])
 
-        tmp = 0
+        tmp = df
         for item in rows:
             tmp = pd.DataFrame(np.insert(df.values, item[0],values = list(item[1].values()), axis = 0 ))
             tmp = pd.DataFrame(np.insert(tmp.values, item[0]+1,values = list(item[2].values()), axis = 0 ))
@@ -134,7 +133,7 @@ class Response():
         tmp.columns = df.columns
 
         self.processed_detailed_df = tmp
-        return tmp 
+        return tmp
 
     def get_daily_work(self):
         '''
@@ -155,9 +154,10 @@ class Response():
         })
         fig = px.bar(tmp, x =  'day', y = 'work done')
         fig.update_layout(height = 600, width = 1050)
-        
+        fig.show()
+
         self.daily_df, self.daily_df_fig = tmp, fig
-        return tmp, fig
+        # return tmp, fig
 
 
     def build_stacked_bar(self):
@@ -181,27 +181,23 @@ class Response():
                     trace_dict[project][day] = 0
                 else:
                     trace_dict[project][day] = sum(tmp['dur'].tolist())/3600000
-                    # add zeros
-        # print(trace_dict)
-
+                    
         trace_dict2 = dict() 
-        for k, v in trace_dict.items():
+        for k, _ in trace_dict.items():
             trace_dict2[k] = OrderedDict(sorted(trace_dict[k].items()))
 
         fig = go.Figure()
-
         for key in trace_dict.keys():
-            
             y = list(trace_dict[key].values())
-        
             fig.add_trace(go.Bar(
                 x = days,
                 y = y, name = key
             ))
         fig.update_layout(width  =1500, barmode = 'stack')
-
+        fig.show()
         self.detailed_stacked_bar = fig
-        return fig
+
+        # return fig
 
 
     def build_sunburst_data(self, df, parents, labels,values, string = 'total'):
@@ -227,9 +223,10 @@ class Response():
         return parents, labels, values
 
 
-    def main_sunburst(self, df):
-        self.get_processed_df()
-        df = self.processed_detailed_df
+    def main_sunburst(self):
+        # self.collect_response()
+        df = self.summary_df
+        
         parents, labels, values = self.build_sunburst_data(df, df['project'].tolist(), df['task'].tolist(),df['task time duration'].tolist(), string = 'total')
         fig = go.Figure()
         fig.add_trace(
@@ -248,14 +245,28 @@ class Response():
             'r': 80, 
             
         })
+        fig.show()
         self.sunburst_fig = fig
-        return fig
+        # return fig
 
 
 res = Response(email=email, 
     token=token, 
     workspace_id=workspace_id, 
     start_date=str(datetime.datetime(2020, 8, 10).date()), 
-    end_date=str(datetime.datetime(2020, 8, 10).date()))
-fig = res.build_stacked_bar()
-fig.show()
+    end_date=str(datetime.datetime(2020, 10, 5).date()))
+res.get_daily_work()
+
+res = Response(email=email, 
+    token=token, 
+    workspace_id=workspace_id, 
+    start_date=str(datetime.datetime(2020, 8, 10).date()), 
+    end_date=str(datetime.datetime(2020, 10, 5).date()))
+res.build_stacked_bar()
+
+res = Response(email=email, 
+    token=token, 
+    workspace_id=workspace_id, 
+    start_date=str(datetime.datetime(2020, 8, 10).date()), 
+    end_date=str(datetime.datetime(2020, 10, 5).date()))
+res.main_sunburst()
