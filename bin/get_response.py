@@ -19,10 +19,12 @@ def get_response():
     workspace_id = input("Enter your workspace id:   ")
 
     email, token, workspace_id = fix([email, token, workspace_id])
-    creds = open("creds.txt", "w")
+    creds = open("bin/creds.txt", "w")
     creds.write(
     f"""
     email:{email}
     token:{token}
     workspace_id:{workspace_id}
     """)
+    
+    creds.close()
