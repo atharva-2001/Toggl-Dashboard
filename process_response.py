@@ -19,16 +19,21 @@ import plotly_express as px
 import time
 from get_response import get_response
 
-file = open('creds.txt')
-lines = file.readlines()
 
-if len(lines) == 0:
-    get_response()
-else:
-    email = lines[1].split(":")[1][:-1]
-    token = lines[2].split(":")[1][:-1]
-    workspace_id = lines[3].split(":")[1][:-1]
+def fetch_creds():
+    file = open('creds.txt')
+    lines = file.readlines()
 
+    if len(lines) == 0:
+        get_response()
+    else:
+        email = lines[1].split(":")[1][:-1]
+        token = lines[2].split(":")[1][:-1]
+        workspace_id = lines[3].split(":")[1][:-1]
+
+    return (email, token, workspace_id)
+
+email, token, workspace_id = fetch_creds()
 class Response():
     '''
     Inputs: email, token workspace_id, start_date, end_date
@@ -245,15 +250,15 @@ class Response():
         return fig
 
 
-res = Response(email=email, 
-    token=token, 
-    workspace_id=workspace_id, 
-    start_date=str(datetime.datetime(2020, 8, 10).date()), 
-    end_date=str(datetime.datetime(2020, 10, 5).date()))
-daily_df, fig = res.get_daily_work()
-fig.show()
+# res = Response(email=email, 
+#     token=token, 
+#     workspace_id=workspace_id, 
+#     start_date=str(datetime.datetime(2020, 8, 10).date()), 
+#     end_date=str(datetime.datetime(2020, 10, 5).date()))
+# daily_df, fig = res.get_daily_work()
+# fig.show()
 
-fig = res.build_stacked_bar()
-fig.show()
-fig = res.main_sunburst()
-fig.show()
+# fig = res.build_stacked_bar()
+# fig.show()
+# fig = res.main_sunburst()
+# fig.show()
