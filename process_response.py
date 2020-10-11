@@ -89,3 +89,49 @@ class response():
 
         return [detailed_df, summary_df]
 
+    def get_processed_df(self, df):
+        '''
+        process the detailed df
+        '''
+        df = self.detailed_df
+        df['start'] = df['start'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
+        df['end'] = df['end'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
+        df['updated'] = df['updated'].apply(lambda x: datetime.datetime.strptime(x.split("+")[0], '%Y-%m-%dT%H:%M:%S'))
+        df['start_day'] = df['start'].apply(lambda x: x.date())
+        df['end_day'] = df['end'].apply(lambda x: x.date())
+
+        df_daily_raw = defaultdict(list)
+        rows = []
+
+        for index, row in df.iterrows():
+            # if end and start day is equal
+            if row['start_day'] != row['end_day']:
+                row1, row2 = row.to_dict(), row.to_dict()
+                start = row['start']
+                end = row['end']
+
+                end_day = row['end_day']
+
+                mid =  (datetime.datetime.combine(row['end_day'], datetime.datetime.min.time()))
+
+                dur1 = (mid - start).seconds * 1000
+                dur2 = (end - mid).seconds * 1000
+                # print(dur1, dur2)
+                
+                row1['dur'] = dur1
+                row2['dur'] = dur2
+
+                row1['end'] = pd.Timestamp((datetime.datetime.combine(row['start_day'], datetime.datetime.max.time())))
+                row2['start'] = pd.Timestamp(mid)
+
+                # row1['start_day'] = row['start_day']
+                row1['end_day'] = row1['end'].date()
+                row2['start_day'] = mid.date()
+                rows.append([index, row1, row2])
+        # print(df.columns)
+        for item in rows:
+            tmp = pd.DataFrame(np.insert(df.values, item[0],values = list(item[1].values()), axis = 0 ))
+            tmp = pd.DataFrame(np.insert(tmp.values, item[0]+1,values = list(item[2].values()), axis = 0 ))
+            tmp.drop(item[0] + 2, inplace = True)
+        tmp.columns = df.columns
+        return df 
