@@ -17,21 +17,27 @@ import plotly.graph_objects as go
 import numpy as np
 import plotly_express as px
 import time
-from get_response import get_response
+from bin import get_response
+from importlib import resources
 
 
 def fetch_creds():
-    file = open('creds.txt')
+    file = resources.open_text('bin', 'creds.txt')
     lines = file.readlines()
 
     if len(lines) == 0:
-        get_response()
+        get_response.get_response()
+        file = resources.open_text('bin', 'creds.txt')
+        lines = file.readlines()
+        e = lines[1].split(":")[1][:-1]
+        t = lines[2].split(":")[1][:-1]
+        w = lines[3].split(":")[1][:-1]
     else:
-        email = lines[1].split(":")[1][:-1]
-        token = lines[2].split(":")[1][:-1]
-        workspace_id = lines[3].split(":")[1][:-1]
+        e = lines[1].split(":")[1][:-1]
+        t = lines[2].split(":")[1][:-1]
+        w = lines[3].split(":")[1][:-1]
 
-    return (email, token, workspace_id)
+    return (e,t,w)
 
 email, token, workspace_id = fetch_creds()
 class Response():

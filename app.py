@@ -12,9 +12,10 @@ import plotly.graph_objects as go
 import numpy as np
 import plotly_express as px
 import time
-from process_response import Response, fetch_creds
+# from process_response import Response, fetch_creds
+from bin import process_response
 
-email, token, workspace_id = fetch_creds()
+email, token, workspace_id = process_response.fetch_creds()
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -34,7 +35,7 @@ app.layout = html.Div([
                     max_date_allowed=datetime.datetime(2025, 12, 30),
                     initial_visible_month=datetime.datetime(2017, 8, 5),
                     start_date=datetime.datetime(2020, 8, 10).date(), 
-                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=5), # !fix this
+                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=10), # !fix this
                     display_format='MMM Do, YY',
                     style={"font-size": "20px", "fontFamily": "Lucida Console"})
             ),
@@ -127,7 +128,7 @@ def update_output(start_date, end_date, token, mail):
     # projects_seg  = build_stacked_bar(details_processed)
 
 
-    res = Response(email=email, 
+    res = process_response.Response(email=email, 
         token=token, 
         workspace_id=workspace_id, 
         start_date=start_date, 
@@ -137,11 +138,10 @@ def update_output(start_date, end_date, token, mail):
 
     projects_seg = res.build_stacked_bar()
     sunburst = res.main_sunburst()
-    sunburst.show()
+    # sunburst.show()
 
     avg_work = str(round(sum(daily_df['work done'].tolist())/len(daily_df), 2)) + 'hrs'
     return (sunburst, daily_bar, projects_seg, avg_work)
-
 
 
 
