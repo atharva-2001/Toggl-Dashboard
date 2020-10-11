@@ -1,5 +1,0 @@
-
-    email:aryaatharva18@gmail.com
-    token:7f45ea45a1833ac7e127047a738e4264
-    workspace_id:4482767
-    
