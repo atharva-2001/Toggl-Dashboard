@@ -39,7 +39,7 @@ app.layout = html.Div([
                     max_date_allowed=datetime.datetime(2025, 12, 30),
                     initial_visible_month=datetime.datetime(2017, 8, 5),
                     start_date=datetime.datetime(2020, 8, 10).date(), 
-                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=1), # !fix this
+                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=3), # !fix this
                     display_format='MMM Do, YY',
                     style={"font-size": "20px", "fontFamily": "Lucida Console"})
             ),
@@ -82,9 +82,7 @@ app.layout = html.Div([
         html.Div(html.H1(children = "daily work done on an average: "), style = {'width': '60%', 'display': 'inline-block' , "fontFamily": "Lucida Console" }),
         html.Div(html.H1(id = 'daily-avg-work'), style ={'width': '40%', 'display': 'inline-block' , "fontFamily": "Lucida Console"}),
         
-    ]),
-    dcc.Graph(id = 'main sunburst2')
-
+    ])
 
     
     # html.Div(id='output-container-date-picker-range')
@@ -102,8 +100,7 @@ def pause(value):
     [dash.dependencies.Output('main sunburst', 'figure'),
     dash.dependencies.Output('daily', 'figure'),
     dash.dependencies.Output('details-seg', 'figure'), 
-    dash.dependencies.Output('daily-avg-work', 'children'),
-    dash.dependencies.Output('main sunburst2', 'figure')
+    dash.dependencies.Output('daily-avg-work', 'children')
     ],
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date'), 
@@ -139,15 +136,16 @@ def update_output(start_date, end_date, token, mail):
         workspace_id=workspace_id, 
         start_date=start_date, 
         end_date=end_date)
-
+    # print(end_date)
     daily_df, daily_bar = res.get_daily_work()
 
     projects_seg = res.build_stacked_bar()
-    sunburst = res.main_sunburst()
-    sunburst.show()
+    _ = res.main_sunburst()
+    sunburst = res.sunburst_fig
+    # sunburst.show()
 
     avg_work = str(round(sum(daily_df['work done'].tolist())/len(daily_df), 2)) + 'hrs'
-    return (sunburst, daily_bar, projects_seg, avg_work, sunburst)
+    return (sunburst, daily_bar, projects_seg, avg_work)
 
 
 
