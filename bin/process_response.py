@@ -241,7 +241,7 @@ class Response():
         df = self.summary_df
         
         parents, labels, values = self.build_sunburst_data(df, df['project'].tolist(), df['task'].tolist(),df['task time duration'].tolist(), string = 'total')
-        print(len(parents), len(values), len(labels))
+        # print(len(parents), len(values), len(labels))
         # tmper = (pd.DataFrame({
         #     'labels': labels,
         #     'parents': parents,
