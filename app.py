@@ -73,9 +73,9 @@ app.layout = html.Div([
 
         )),
         html.Div(    
-            dcc.Graph(id = 'main sunburst'), style={'width': '45%', 'display': 'inline-block'}),
+            dcc.Graph(id = 'main sunburst'), style={'width': '30%', 'display': 'inline-block'}),
         html.Div(
-            dcc.Graph(id = 'daily'), style={'width': '55%', 'display': 'inline-block'  })
+            dcc.Graph(id = 'daily'), style={'width': '70%', 'display': 'inline-block'  })
             ]),
     dcc.Graph(id = 'details-seg'),
     html.Div([
