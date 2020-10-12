@@ -18,15 +18,19 @@ import numpy as np
 import plotly_express as px
 import time
 from bin import get_response
+# import get_response
 from importlib import resources
 
 
 def fetch_creds():
     file = resources.open_text('bin', 'creds.txt')
+    # file = open('creds.txt')
+    
     lines = file.readlines()
 
     if len(lines) == 0:
         get_response.get_response()
+        # file = open('creds.txt')
         file = resources.open_text('bin', 'creds.txt')
         lines = file.readlines()
         e = lines[1].split(":")[1][:-1]
@@ -220,12 +224,14 @@ class Response():
                     tmp.append(value)
             main_values.append(sum(tmp))
         
+        labels = [label if label not in main_parents else label + '(label)' for label in labels]
         parents += [string] * len(main_parents)
         labels += main_parents
         values += main_values
         
         parents.append("")
         labels.append(string)
+        labels = [item if item != '' else 'No Label' for item in labels]
         values.append(0.5*sum(values))
         values = [item/3600000 for item in values] 
         return parents, labels, values
@@ -235,6 +241,14 @@ class Response():
         df = self.summary_df
         
         parents, labels, values = self.build_sunburst_data(df, df['project'].tolist(), df['task'].tolist(),df['task time duration'].tolist(), string = 'total')
+        print(len(parents), len(values), len(labels))
+        # tmper = (pd.DataFrame({
+        #     'labels': labels,
+        #     'parents': parents,
+        #     'values': values
+            
+        # }))
+        # tmper.to_csv('tmper.csv', index = False)
         fig = go.Figure()
         fig.add_trace(
             go.Sunburst(
@@ -260,7 +274,8 @@ class Response():
 #     token=token, 
 #     workspace_id=workspace_id, 
 #     start_date=str(datetime.datetime(2020, 8, 10).date()), 
-#     end_date=str(datetime.datetime(2020, 10, 5).date()))
+#     end_date=str(datetime.datetime.now().date() -  datetime.timedelta(days=0))
+#     )
 # daily_df, fig = res.get_daily_work()
 # fig.show()
 

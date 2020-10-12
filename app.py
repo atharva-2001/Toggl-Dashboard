@@ -15,11 +15,15 @@ import time
 # from process_response import Response, fetch_creds
 from bin import process_response
 
+import warnings
+warnings.filterwarnings("ignore")
+
 email, token, workspace_id = process_response.fetch_creds()
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
 app.layout = html.Div([
     
     html.Div([
@@ -35,7 +39,7 @@ app.layout = html.Div([
                     max_date_allowed=datetime.datetime(2025, 12, 30),
                     initial_visible_month=datetime.datetime(2017, 8, 5),
                     start_date=datetime.datetime(2020, 8, 10).date(), 
-                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=10), # !fix this
+                    end_date= datetime.datetime.now().date() -  datetime.timedelta(days=1), # !fix this
                     display_format='MMM Do, YY',
                     style={"font-size": "20px", "fontFamily": "Lucida Console"})
             ),
@@ -69,16 +73,17 @@ app.layout = html.Div([
 
         )),
         html.Div(    
-            dcc.Graph(id = 'main sunburst'), style={'width': '30%', 'display': 'inline-block'}),
+            dcc.Graph(id = 'main sunburst'), style={'width': '45%', 'display': 'inline-block'}),
         html.Div(
-            dcc.Graph(id = 'daily'), style={'width': '60%', 'display': 'inline-block'  })
+            dcc.Graph(id = 'daily'), style={'width': '55%', 'display': 'inline-block'  })
             ]),
     dcc.Graph(id = 'details-seg'),
     html.Div([
         html.Div(html.H1(children = "daily work done on an average: "), style = {'width': '60%', 'display': 'inline-block' , "fontFamily": "Lucida Console" }),
         html.Div(html.H1(id = 'daily-avg-work'), style ={'width': '40%', 'display': 'inline-block' , "fontFamily": "Lucida Console"}),
         
-    ])
+    ]),
+    dcc.Graph(id = 'main sunburst2')
 
 
     
@@ -98,6 +103,7 @@ def pause(value):
     dash.dependencies.Output('daily', 'figure'),
     dash.dependencies.Output('details-seg', 'figure'), 
     dash.dependencies.Output('daily-avg-work', 'children'),
+    dash.dependencies.Output('main sunburst2', 'figure')
     ],
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date'), 
@@ -109,10 +115,10 @@ def update_output(start_date, end_date, token, mail):
     Flag = False
 
     if start_date is not None:
-        start_date = datetime.datetime.strptime(re.split('T| ', start_date)[0], '%Y-%m-%d')
+        start_date = str(datetime.datetime.strptime(re.split('T| ', start_date)[0], '%Y-%m-%d'))
         Flag = True
     if end_date is not None:
-        end_date = datetime.datetime.strptime(re.split('T| ', end_date)[0], '%Y-%m-%d')
+        end_date = str(datetime.datetime.strptime(re.split('T| ', end_date)[0], '%Y-%m-%d'))
         Flag = True
     if Flag == False:
         pass # ! raise error
@@ -138,10 +144,10 @@ def update_output(start_date, end_date, token, mail):
 
     projects_seg = res.build_stacked_bar()
     sunburst = res.main_sunburst()
-    # sunburst.show()
+    sunburst.show()
 
     avg_work = str(round(sum(daily_df['work done'].tolist())/len(daily_df), 2)) + 'hrs'
-    return (sunburst, daily_bar, projects_seg, avg_work)
+    return (sunburst, daily_bar, projects_seg, avg_work, sunburst)
 
 
 
