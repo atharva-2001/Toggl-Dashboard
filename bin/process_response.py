@@ -162,7 +162,7 @@ class Response():
             'work done': list(net_work.values())
         })
         fig = px.bar(tmp, x =  'day', y = 'work done')
-        fig.update_layout(height = 600, width = 1050)
+        fig.update_layout(height = 600, width = 1550)
 
         self.daily_df, self.daily_df_fig = tmp, fig
         return tmp, fig
