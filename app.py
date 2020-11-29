@@ -33,6 +33,7 @@ app.layout = html.Div(
     [
         html.Div(
             [  # the toggl dashboard logo is 'inline block' with these threee: date picker, password and email text boxes
+               # what that means is that the logo is side by side with date picker, pass and email text boxes 
                 html.P(
                     "    Toggl Dashboard",
                     style={
@@ -86,21 +87,21 @@ app.layout = html.Div(
                     ],
                     style={"width": "30%", "display": "inline-block"},
                 ),  # look at the width here
-            ]
+            ] # this inline block ends here, then come the graphs
         ),
         html.Div(
             [
                 html.Div(
-                    dcc.Loading(
+                    dcc.Loading( # for the loading screen
                         id="loading",
                         # what's children?
-                        loading_state={"component_name": "main sunburst,daily"},
+                        loading_state={"component_name": "main sunburst,daily"}, 
                         # fullscreen = True, # uncomment if all your details are saved in creds.txt
                         type="default",
                     )
                 ),
                 html.Div(
-                    dcc.Graph(id="main sunburst"),
+                    dcc.Graph(id="main sunburst"), # the sunburst and the daily bar plot (next)
                     style={"width": "30%", "display": "inline-block"},
                 ),  # the daily blue graph is inline with sunburst
                 html.Div(
@@ -139,7 +140,7 @@ app.layout = html.Div(
     [dash.dependencies.Input("loading", "fullscreen")],
 )
 def pause(value):
-    time.sleep(10)
+    time.sleep(10) # shows that rectangle thing for 10 seconds
     return
 
 
