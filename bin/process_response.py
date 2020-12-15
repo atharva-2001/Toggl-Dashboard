@@ -92,6 +92,7 @@ class Response:
             URL = URL + "&page=" + str(ind)
             response = requests.get(URL, auth=(username, password)).json()
 
+            # print(response)
             data_in = response["data"]
             data += data_in
             for col in cols:
