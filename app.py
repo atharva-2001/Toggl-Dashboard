@@ -25,6 +25,9 @@ warnings.filterwarnings("ignore")
 
 email, token, workspace_id = process_response.fetch_creds()  # collecting all the creds!
 
+end_date = datetime.datetime.now().date() - datetime.timedelta(days=3)
+start_date = end_date-datetime.timedelta(days=20)
+
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -51,9 +54,8 @@ app.layout = html.Div(
                                 min_date_allowed=datetime.datetime(2015, 12, 1),
                                 max_date_allowed=datetime.datetime(2025, 12, 30),
                                 initial_visible_month=datetime.datetime(2017, 8, 5),
-                                start_date=datetime.datetime(2020, 11, 25).date(),
-                                end_date=datetime.datetime.now().date()
-                                - datetime.timedelta(days=3),
+                                start_date=start_date,
+                                end_date=end_date,
                                 display_format="MMM Do, YY",
                                 style={
                                     "font-size": "20px",
@@ -201,3 +203,4 @@ def update_output(start_date, end_date, token, mail):
 
 if __name__ == "__main__":
     app.run_server(debug=True)
+    # TODO: find a better way to kill the server
