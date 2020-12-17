@@ -20,7 +20,7 @@ from collections import defaultdict, OrderedDict
 import requests
 import plotly.graph_objects as go
 import numpy as np
-import plotly_express as px
+import plotly.express as px
 import time
 from bin import get_response
 
