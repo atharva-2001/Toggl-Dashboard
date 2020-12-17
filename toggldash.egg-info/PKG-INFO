@@ -1,0 +1,30 @@
+Metadata-Version: 2.1
+Name: toggldash
+Version: 1.0.0
+Summary: plots data from toggl track
+Home-page: https://github.com/atharva-2001/Toggl-Dashboard
+Author: Atharva Arya
+Author-email: aryaatharva18@gmail.com
+License: MIT
+Description: # Toggl Dashboard
+        
+        ## What is this
+        
+        This is a dashboard that I am building to get more insights about the work I do and the time I spend doing things.
+        
+        
+        ## Why
+        
+        I feel like the insights toggl gives aren't that much, and wished I could see more of where I am spending my time and energy. Also it makes a cool project!
+        
+        ![](https://github.com/bigpappathanos-web/Toggl-Dashboard/blob/main/bin/images/Peek%202020-10-12%2013-26.gif?raw=true )
+        
+        Work in progress by Atharva Arya.
+        
+        
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
