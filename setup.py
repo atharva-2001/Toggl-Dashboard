@@ -1,31 +1,31 @@
 import pathlib
 from setuptools import setup
+from setuptools import find_packages
 
-# The directory containing this file
-HERE = pathlib.Path(__file__).parent
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
-# The text of the README file
-README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
 setup(
     name="toggldash",
     version="1.0.0",
     description="plots data from toggl track",
-    long_description=README,
+    long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/bigpappathanos-web/Toggl-Dashboard",
+    url="https://github.com/atharva-2001/Toggl-Dashboard",
     author="Atharva Arya",
     author_email="aryaatharva18@gmail.com",
     license="MIT",
+    python_requires='>=3.7',
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
+        "Operating System :: OS Independent"
     ],
-    packages=["toggldash"],
+    packages=find_packages(),
     include_package_data=True,
-    install_requires=["dash", "plotly", "plotly_express", "pandas", "numpy", "requests"],
+    install_requires=["dash", "plotly", "pandas", "numpy", "requests"],
     entry_points={
         "console_scripts": [
             "realpython=reader.__main__:main",
