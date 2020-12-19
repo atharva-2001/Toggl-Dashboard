@@ -1,15 +1,39 @@
 # Toggl Dashboard
 
-## What is this
+## This small project helps you run a Dash app on localhost, in which you can see where you time has been used using data from Toggl track. Its just a more comprehensive report of your data. 
 
-This is a dashboard that I am building to get more insights about the work I do and the time I spend doing things.
+</br>
 
+### You can see the the project on [PYPI](https://pypi.org/project/toggldash/) too. 
+### In order to run the program, install the package using the code below:
 
-## Why
+```
+pip install toggldash
+```
+</br>
 
-I feel like the insights toggl gives aren't that much, and wished I could see more of where I am spending my time and energy. Also it makes a cool project!
+### You can run the dashboard using the python code below:
+```python
+from toggldash import app
+app.run()
+```
+</br>
 
-![](https://github.com/bigpappathanos-web/Toggl-Dashboard/blob/main/bin/images/Peek%202020-10-12%2013-26.gif?raw=true )
+### The program then asks you your toggl credentials. It saves them in a file in your current directory called creds.txt. The file will look something like this
+```
 
-Work in progress by Atharva Arya.
+    email:yourawesome@email.com
+    token:348975634875687ygegy85534653
+    workspace_id:5525432
+    
+```
+
+### Or you can just create a file with the creds in it. The above creds won't work.
+</br>
+
+### By default the app will run on http://127.0.0.1:8050/
+
+</br>
+
+![](https://github.com/bigpappathanos-web/Toggl-Dashboard/blob/main/toggldash/images/Peek%202020-10-12%2013-26.gif?raw=true )
 
