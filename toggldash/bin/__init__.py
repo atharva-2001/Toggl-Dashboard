@@ -1,1 +1,0 @@
-__all__  = ['get_response', 'process_response']
