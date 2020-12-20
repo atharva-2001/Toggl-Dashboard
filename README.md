@@ -1,11 +1,10 @@
 # Toggl Dashboard
-##
+
 #### This small project helps you run a Dash app on localhost, in which you can see where you time has been used using data from Toggl track. Its just a more comprehensive report of your data. 
 
 </br>
 
-#### You can see the the project on [PYPI](https://pypi.org/project/toggldash/) too. 
-#### In order to run the program, install the package using the code below:
+#### You can see the the project on [PYPI](https://pypi.org/project/toggldash/) too. In order to run the program, install the package using the code below:
 
 ```
 pip install toggldash
