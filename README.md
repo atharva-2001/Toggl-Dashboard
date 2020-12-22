@@ -1,8 +1,6 @@
 # Toggl Dashboard
-
 #### This small project helps you run a Dash app on localhost, in which you can see where you time has been used using data from Toggl track. Its just a more comprehensive report of your data. 
-
-</br>
+<!-- </br> -->
 
 #### You can see the the project on [PYPI](https://pypi.org/project/toggldash/) too. In order to run the program, install the package using the code below:
 
@@ -28,7 +26,7 @@ app.run()
 ```
 
 #### Or you can just create a file with the creds in it. The above creds won't work.
-</br>
+<!-- </br> -->
 
 #### By default the app will run on http://127.0.0.1:8050/
 
