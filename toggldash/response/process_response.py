@@ -30,10 +30,12 @@ from importlib import resources
 
 def fetch_creds():
     # file = resources.open_text("response", "creds.txt")
-    file = open('creds.txt' ,"a+")
+    try:
+        file = open('creds.txt' ,"r")
+        lines = file.readlines()
+    except OSError as e: 
+        lines=[]
 
-    lines = file.readlines()
-    print(lines)
     if len(lines) == 0:
         get_response.get_response()
         file = open('creds.txt', "r")
@@ -43,7 +45,6 @@ def fetch_creds():
         t = lines[2].split(":")[1][:-1]
         w = lines[3].split(":")[1][:-1]
     else:
-        print(lines)
         e = lines[1].split(":")[1][:-1]
         t = lines[2].split(":")[1][:-1]
         w = lines[3].split(":")[1][:-1]
