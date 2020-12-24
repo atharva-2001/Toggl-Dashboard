@@ -30,13 +30,15 @@ from importlib import resources
 
 def fetch_creds():
     # file = resources.open_text("response", "creds.txt")
-    file = open('creds.txt', "w+")
-
-    lines = file.readlines()
+    try:
+        file = open('creds.txt' ,"r")
+        lines = file.readlines()
+    except OSError as e: 
+        lines=[]
 
     if len(lines) == 0:
         get_response.get_response()
-        file = open('creds.txt')
+        file = open('creds.txt', "r")
         # file = resources.open_text("bin", "creds.txt")
         lines = file.readlines()
         e = lines[1].split(":")[1][:-1]
@@ -50,7 +52,7 @@ def fetch_creds():
     return (e, t, w)
 
 
-email, token, workspace_id = fetch_creds()
+# email, token, workspace_id = fetch_creds()
 
 
 class Response:
