@@ -200,8 +200,8 @@ def update_output(start_date, end_date, token, mail):
     )
     return (sunburst, daily_bar, projects_seg, avg_work)
 
-def run():
-    app.run_server(debug = False)
+def run(port=8050, host='127.0.0.1', debug = False):
+    app.run_server(debug = debug, port=port, host = host)
 
 if __name__ == "__main__":
     run()
