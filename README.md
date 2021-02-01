@@ -1,7 +1,10 @@
 
+
 ![](https://github.com/atharva-2001/Toggl-Dashboard/blob/main/toggldash/images/Untitled.png?raw=true)
 
-
+<p align = "center">
+<a href=""><img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/atharva-2001/Toggl-Dashboard?style=for-the-badge"></a> <a href=""><img alt="GitHub License" src="https://img.shields.io/github/license/atharva-2001/Toggl-Dashboard?style=for-the-badge"></a> <a href=""><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/atharva-2001/Toggl-Dashboard?style=for-the-badge"></a> <a href=""><img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/y/atharva-2001/Toggl-Dashboard?style=for-the-badge"></a> <a href=""><img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/atharva-2001/Toggl-Dashboard?style=for-the-badge"></a>
+</p>
 This small project helps you run a Dash app on localhost, in which you can see where your time has been used using data from Toggl track. It's just a more comprehensive report of your data. 
 You can see the the project on [PYPI](https://pypi.org/project/toggldash/) too. In order to run the program, install the package using the code below:
 
