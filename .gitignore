@@ -136,3 +136,11 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+.vscode
+.idea/
+tests/
+toggldash.egg-info/
+creds.txt
+toggldash/__pycache__
+toggldash/response/__pycache__
