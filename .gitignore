@@ -142,5 +142,5 @@ cython_debug/
 tests/
 toggldash.egg-info/
 creds.txt
-toggldash/__pycache__
-toggldash/response/__pycache__
+/toggldash/__pycache__
+/toggldash/response/__pycache__
