@@ -1,4 +1,4 @@
-dash~=1.18.1
+dash~=1.20.0
 black==20.8b1
 dash-bootstrap-components==0.11.1
 dash-core-components==1.14.1
