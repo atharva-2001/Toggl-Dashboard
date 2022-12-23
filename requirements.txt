@@ -10,3 +10,4 @@ Jinja2==2.11.3
 numpy==1.19.5
 plotly==4.14.3
 requests==2.25.1
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
