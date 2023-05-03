@@ -4,7 +4,7 @@ dash-bootstrap-components==0.11.1
 dash-core-components==1.14.1
 dash-html-components==1.1.1
 dash-table==4.11.1
-Flask==1.1.2
+Flask==2.2.5
 gunicorn==20.0.4
 Jinja2==2.11.3
 numpy==1.19.5
